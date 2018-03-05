@@ -43,7 +43,6 @@ public class Animation {
             return;
 
         scaleRect(dest);
-System.out.println("...DRAWING...");
         canvas.drawBitmap(frames[currFrame], location.x - (frames[currFrame].getWidth()/2), location.y - (frames[currFrame].getHeight()/2), new Paint());
     }
 

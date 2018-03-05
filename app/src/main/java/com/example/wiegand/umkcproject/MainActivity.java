@@ -27,6 +27,7 @@ public class MainActivity extends Activity {
         Constants.SCREEN_WIDTH = dm.widthPixels;
         Constants.SCREEN_HEIGHT = dm.heightPixels;
 
+        System.out.println("!!( " + Constants.SCREEN_HEIGHT + ", " + Constants.SCREEN_WIDTH + ")");
 
     }
 }

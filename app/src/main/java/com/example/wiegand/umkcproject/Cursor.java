@@ -139,7 +139,7 @@ public class Cursor implements GameObject {
 
 //      System.out.println("xpas:" + xpas);
 //      System.out.println("ypas:" + ypas);
-      System.out.println("curr: (" + current.x + " , " + current.y + ")");
+        System.out.println("( " + Constants.SCREEN_HEIGHT + " )");
 //      System.out.println("aim: (" + point.x + " , " + point.y + ")");
 //      System.out.println("slope: " + slope);
 //      System.out.println("disx: " + disx);

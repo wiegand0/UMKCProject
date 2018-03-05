@@ -12,6 +12,12 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.SurfaceHolder;
+
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 /**
  * Created by wiegand on 1/31/18.
  */
@@ -33,7 +39,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private Cursor crosshair;
     private Player playerOne;
     private Point playerPoint;
-
+    private WorldClock clock;
+    private Enemy adversary;
 
     //for Panning
     /*
@@ -57,9 +64,18 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
         thread = new MainThread(getHolder(), this);
 
-        crosshair = new Cursor(new Rect(100, 100, 200, 200), Color.rgb(100, 0, 100));
+//        BitmapFactory.Options options = new BitmapFactory.Options();
+
+//        options.inScaled = false;
+
+
+        crosshair = new Cursor(new Rect(), Color.rgb(100, 0, 100));
         playerOne = new Player(new Rect());
         playerPoint = new Point();
+        clock = new WorldClock();
+        adversary = new Enemy(new Rect());
+        //bgScaled = Bitmap.createScaledBitmap(bg, Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT, false);
+
 
         setFocusable(true);
     }
@@ -71,6 +87,16 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+
+        Runnable time = new Runnable() {
+            public void run() {
+                clock.update();
+            }
+        };
+
+        ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);
+        exec.scheduleAtFixedRate(time, 0, 5, TimeUnit.SECONDS);
+
         thread = new MainThread(getHolder(), this);
 
         thread.setRunning(true);
@@ -139,20 +165,28 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     public void update() {
         crosshair.update(playerPoint);
-        playerOne.update(playerPoint);
+        playerOne.update(playerPoint, adversary.attack(playerOne.getRect()));
     }
 
     @Override
     public void draw(Canvas canvas) {
+
         super.draw(canvas);
+        System.out.println("( " + bg.getHeight() + ", " + bg.getWidth() + " )");
 
+        int width = Constants.SCREEN_WIDTH;
+        int height = (width*bg.getHeight())/bg.getWidth();
 
-//        System.out.println("( " + currViewX + ", " + currViewY + " )");
-        canvas.drawBitmap(bg, -bg.getWidth() / 2 - Constants.SCREEN_WIDTH / 2, -bg.getHeight() / 2, null);
+        bg = Bitmap.createScaledBitmap(bg, width, height, true);
+
+        canvas.drawBitmap(bg,0, 0, null);
         if (START)
             crosshair.draw(canvas);
+
+        height = (int)((width*playerOne.getHeight())/playerOne.getWidth());
         playerOne.draw(canvas);
-        canvas.drawBitmap(fg, -bg.getWidth() / 2, -bg.getHeight() / 2, null);
+        clock.draw(canvas);
+        //canvas.drawBitmap(fg, -bg.getWidth()/2 + Constants.SCREEN_WIDTH/2, 100, null);
 
         //canvas.translate(moving.x, moving.y);
     }
